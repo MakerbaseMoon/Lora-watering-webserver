@@ -19,8 +19,8 @@
 // 915E6 for North America
 #define BAND 433E6
 
-const char* ssid     = SSID;
-const char* password = PASSWORD;
+const char* ssid     = MY_SSID;
+const char* password = MY_PASSWORD;
 
 byte MasterNode = 0xFF;
 byte Node1 = 0x01;

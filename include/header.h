@@ -1,7 +1,7 @@
 #ifndef __HEADER_H__
 #define __HEADER_H__
 
-#define SSID "SSID"
-#define PASSWORD "PASSWORD"
+#define MY_SSID "SSID"
+#define MY_PASSWORD "PASSWORD"
 
 #endif
