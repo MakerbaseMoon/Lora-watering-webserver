@@ -1,9 +1,12 @@
 <!DOCTYPE HTML><html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8">
         <link rel="icon" href="data:,">
         <title>ESP32 (LoRa + Server)</title>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
         <style>
             body {
                 margin: 0;
@@ -33,10 +36,11 @@
                 font-size: 1.2rem; 
             }
 
-            .readings { 
-                font-size: 2.0rem;
-            }
+            .readings {
+                font-size: 2.0rem; 
+            }  
         </style>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
         <header>
@@ -51,19 +55,29 @@
             </p>
             <p>
                 <i class="fas fa-tint" style="color:#00add6;"></i> Humidity: <span id="humidity" class="readings">%HUMIDITY%</span>
-                <sup>%</sup>
+                <sup>&deg;RH</sup>
             </p>
             <p>
-                <i class="fas fa-angle-double-down" style="color:#e8c14d;"></i> Pressure: <span id="pressure" class="readings">%PRESSURE%</span>
-                <sup>hpa</sup>
+                <i class="fas fa-tint" style="color:#00add6;"></i> Moisture: <span id="moisture" class="readings">%MOISTURE%</span>
+                <sup>pF</sup>
+            </p>
+            <p>
+                <button type="button" class="btn btn-primary btn-lg" onclick="buttonClick('watering')">澆水開關</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="buttonClick('feeding')">飼料開關</button>
             </p>
         </main>
         <script>
             setInterval(updateValues, 10000, "temperature");
             setInterval(updateValues, 10000, "humidity");
-            setInterval(updateValues, 10000, "pressure");
+            setInterval(updateValues, 10000, "moisture");
             setInterval(updateValues, 10000, "rssi");
             setInterval(updateValues, 10000, "timestamp");
+
+            function buttonClick(value) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "/" + value, true);
+                xhttp.send();
+            }
 
             function updateValues(value) {
                 var xhttp = new XMLHttpRequest();
