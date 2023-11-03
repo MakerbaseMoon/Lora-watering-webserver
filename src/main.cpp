@@ -3,14 +3,14 @@
 #include <header.h>
 
 #include <SPI.h>
-#include <LoRa.h>
 #include <WiFi.h>
-#include "ESPAsyncWebServer.h"
+#include <LoRa.h>
 #include <SPIFFS.h>
-#include <NTPClient.h>
 #include <WiFiUdp.h>
+#include <NTPClient.h>
+#include <ESPAsyncWebServer.h>
 
-#define ss 5    // GPIO 15
+#define ss   5  // GPIO 15
 #define rst 14  // GPIO 16
 #define dio0 2  // GPIO 4
 
@@ -23,8 +23,8 @@ const char* ssid     = MY_SSID;
 const char* password = MY_PASSWORD;
 
 byte MasterNode = 0xFF;
-byte Node1 = 0x01;
-byte Node2 = 0x02;
+byte Node1      = 0x01;
+byte Node2      = 0x02;
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -37,18 +37,19 @@ String hour;
 String timestamp;
 
 String SenderNode = "";
-String outgoing;    // outgoing message
+String outgoing;        // outgoing message
 
-byte msgCount = 0;  // count of outgoing messages
+byte msgCount   = 0;    // count of outgoing messages
 String incoming = "";
 
 // Tracks the time since last event fired
-unsigned long previousMillis = 0;
-unsigned long int previoussecs = 0;
-unsigned long int currentsecs = 0;
-unsigned long currentMillis = 0;
-int interval = 1 ; // updated every 1 second
-int Secs = 0;
+unsigned long     previousMillis = 0;
+unsigned long int previoussecs   = 0;
+unsigned long int currentsecs    = 0;
+unsigned long     currentMillis  = 0;
+
+int interval = 1; // updated every 1 second
+int Secs     = 0;
 
 // Initialize variables to get and save LoRa data
 int rssi;
@@ -75,8 +76,11 @@ String getValue(String data, char separator, int index);
 String processor(const String& var);
 
 void setup() {
-    Serial.begin(115200);                   // initialize serial
-    //  while (!Serial);
+    Serial.begin(115200);   // initialize serial
+    while (!Serial);
+
+    Serial.println("LoRa For ESP32!!");
+
     startLoRA();
     connectWiFi();
     
@@ -116,28 +120,24 @@ void setup() {
 }
 
 void loop() {
-
     currentMillis = millis();
     currentsecs = currentMillis / 1000;
+
     if ((unsigned long)(currentsecs - previoussecs) >= interval) {
         Secs = Secs + 1;
-        //Serial.println(Secs);
-        if ( Secs >= 11 )
-        {
-        Secs = 0;
-        }
-        if ( (Secs >= 1) && (Secs <= 5) )
-        {
-
-        String message = "10";
-        sendMessage(message, MasterNode, Node1);
+        // Serial.println(Secs);
+        if( Secs >= 11 ) {
+            Secs = 0;
         }
 
-        if ( (Secs >= 6 ) && (Secs <= 10))
-        {
+        if( (Secs >= 1) && (Secs <= 5) ) {
+            String message = "10";
+            sendMessage(message, MasterNode, Node1);
+        }
 
-        String message = "20";
-        sendMessage(message, MasterNode, Node2);
+        if( (Secs >= 6 ) && (Secs <= 10))  {
+            String message = "20";
+            sendMessage(message, MasterNode, Node2);
         }
 
         previoussecs = currentsecs;
@@ -154,12 +154,12 @@ void startLoRA(){
 
     LoRa.setPins(ss, rst, dio0);
     
-    while (!LoRa.begin(BAND) && counter < 10) {
+    while(!LoRa.begin(BAND) && counter < 10) {
         Serial.print(".");
         counter++;
         delay(500);
     }
-    if (counter == 10) {
+    if(counter == 10) {
         // Increment readingID on every new reading
         Serial.println("Starting LoRa failed!"); 
     }
@@ -185,19 +185,19 @@ void connectWiFi(){
 
 String processor(const String& var){
     //Serial.println(var);
-    if(var == "TEMPERATURE"){
+    if(var == "TEMPERATURE") {
         return temperature;
     }
-    else if(var == "HUMIDITY"){
+    else if(var == "HUMIDITY") {
         return humidity;
     }
-    else if(var == "PRESSURE"){
+    else if(var == "PRESSURE") {
         return pressure;
     }
-    else if(var == "TIMESTAMP"){
+    else if(var == "TIMESTAMP") {
         return timestamp;
     }
-    else if (var == "RRSI"){
+    else if (var == "RRSI") {
         return String(rssi);
     }
     return String();
@@ -212,14 +212,14 @@ void getTimeStamp() {
     // We need to extract date and time
     // formattedDate = timeClient.getFormattedDate();
     formattedDate = timeClient.getFormattedTime();
-    //  Serial.println(formattedDate);
+    // Serial.println(formattedDate);
     // Extract date
     int splitT = formattedDate.indexOf("T");
     day = formattedDate.substring(0, splitT);
-    //  Serial.println(day);
+    // Serial.println(day);
     // Extract time
     hour = formattedDate.substring(splitT+1, formattedDate.length()-1);
-    //  Serial.println(hour);
+    // Serial.println(hour);
     timestamp = day + " " + hour;
 }
 
@@ -227,24 +227,26 @@ void getLoRaData() {
     Serial.print("Lora packet received: ");
     // Read packet
     
-    while (LoRa.available()) {
+    while(LoRa.available()) {
         String LoRaData = LoRa.readString();
         // LoRaData format: readingID/temperature&soilMoisture#batterylevel
         // String example: 1/27.43&654#95.34
         Serial.print(LoRaData); 
-        
+
         // Get readingID, temperature and soil moisture
         int pos1 = LoRaData.indexOf('/');
         int pos2 = LoRaData.indexOf('&');
         int pos3 = LoRaData.indexOf('#');
-        readingID = LoRaData.substring(0, pos1);
+
+        readingID   = LoRaData.substring(0, pos1);
         temperature = LoRaData.substring(pos1 +1, pos2);
+    
         humidity = LoRaData.substring(pos2+1, pos3);
-        pressure = LoRaData.substring(pos3+1, LoRaData.length());    
+        pressure = LoRaData.substring(pos3+1, LoRaData.length());
     }
     // Get RSSI
     rssi = LoRa.packetRssi();
-    Serial.print(" with RSSI ");    
+    Serial.print(" with RSSI ");
     Serial.println(rssi);
 }
 
@@ -265,14 +267,14 @@ String getValue(String data, char separator, int index)
 }
 
 void sendMessage(String outgoing, byte MasterNode, byte otherNode) {
-    LoRa.beginPacket();                   // start packet
-    LoRa.write(otherNode);              // add destination address
-    LoRa.write(MasterNode);             // add sender address
-    LoRa.write(msgCount);                 // add message ID
-    LoRa.write(outgoing.length());        // add payload length
-    LoRa.print(outgoing);                 // add payload
-    LoRa.endPacket();                     // finish packet and send it
-    msgCount++;                           // increment message ID
+    LoRa.beginPacket();             // start packet
+    LoRa.write(otherNode);          // add destination address
+    LoRa.write(MasterNode);         // add sender address
+    LoRa.write(msgCount);           // add message ID
+    LoRa.write(outgoing.length());  // add payload length
+    LoRa.print(outgoing);           // add payload
+    LoRa.endPacket();               // finish packet and send it
+    msgCount++;                     // increment message ID
 }
 
 void onReceive(int packetSize) {
@@ -281,45 +283,44 @@ void onReceive(int packetSize) {
     // read packet header bytes:
     int recipient = LoRa.read();          // recipient address
     byte sender = LoRa.read();            // sender address
-    if ( sender == 0X01 )
+    if( sender == 0X01 )
         SenderNode = "Node1";
-    if ( sender == 0X02 )
+    if( sender == 0X02 )
         SenderNode = "Node2";
     byte incomingMsgId = LoRa.read();     // incoming msg ID
     byte incomingLength = LoRa.read();    // incoming msg length
 
 
-    while (LoRa.available()) {
+    while(LoRa.available()) {
         incoming += (char)LoRa.read();
     }
 
-    if (incomingLength != incoming.length()) {   // check length for error
+    if(incomingLength != incoming.length()) {   // check length for error
         //Serial.println("error: message length does not match length");
         ;
-        return;                             // skip rest of function
+        return;                                 // skip rest of function
     }
 
     // if the recipient isn't this device or broadcast,
-    if (recipient != Node1 && recipient != MasterNode) {
+    if(recipient != Node1 && recipient != MasterNode) {
         // Serial.println("This message is not for me.");
         ;
-        return;                             // skip rest of function
+        return;                                 // skip rest of function
     }
 
 Serial.println(SenderNode + ": " +incoming);
 
     // if message is for this device, or broadcast, print details:
-    //Serial.println("Received from: 0x" + String(sender, HEX));
-    //Serial.println("Sent to: 0x" + String(recipient, HEX));
-    //Serial.println("Message ID: " + String(incomingMsgId));
+    // Serial.println("Received from: 0x" + String(sender, HEX));
+    // Serial.println("Sent to: 0x" + String(recipient, HEX));
+    // Serial.println("Message ID: " + String(incomingMsgId));
     // Serial.println("Message length: " + String(incomingLength));
     // Serial.println("Message: " + incoming);
-    //Serial.println("RSSI: " + String(LoRa.packetRssi()));
+    // Serial.println("RSSI: " + String(LoRa.packetRssi()));
     // Serial.println("Snr: " + String(LoRa.packetSnr()));
     // Serial.println();
 
-    if ( sender == 0X02 )
-    {
+    if( sender == 0X02 ) {
         String t = getValue(incoming, ',', 0); // Temperature
         String h = getValue(incoming, ',', 1); // Humidity
 
@@ -328,12 +329,11 @@ Serial.println(SenderNode + ": " +incoming);
         incoming = "";
     }
 
-    if ( sender == 0X01 )
-    {
-        soilMoistureValue = getValue(incoming, ',', 0); // Soil Moisture Value
-        soilmoisturepercent = getValue(incoming, ',', 1); // Soil Moisture percentage
-        wateringSW = getValue(incoming, ',', 2); // Soil Moisture Value
-        soilmoisturepercent = getValue(incoming, ',', 1); // Soil Moisture percentage
+    if( sender == 0X01 ) {
+        soilMoistureValue = getValue(incoming, ',', 0);     // Soil Moisture Value
+        soilmoisturepercent = getValue(incoming, ',', 1);   // Soil Moisture percentage
+        wateringSW = getValue(incoming, ',', 2);            // Soil Moisture Value
+        soilmoisturepercent = getValue(incoming, ',', 1);   // Soil Moisture percentage
         incoming = "";
     }
 
