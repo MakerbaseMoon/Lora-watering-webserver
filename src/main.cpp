@@ -8,6 +8,7 @@
 #include <SPIFFS.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
+#include <ESP32Servo.h>
 #include <ESPAsyncWebServer.h>
 
 #define ss     5
@@ -22,6 +23,8 @@
 
 const char* ssid     = MY_SSID;
 const char* password = MY_PASSWORD;
+
+Servo myservo;
 
 byte MasterNode = 0xFF;
 byte Node1      = NODE1_LORA_ADDRESS;
@@ -115,6 +118,10 @@ void setup() {
     });
     server.on("/feeding", HTTP_GET, [](AsyncWebServerRequest *request){
         Serial.println("Feeding ON");
+        myservo.attach(servo);
+        myservo.write(45);
+        delay(1000);
+        myservo.detach();
         request->send_P(200, "text/plain", "Feeding ON Susses");
     });
 
@@ -160,10 +167,12 @@ void loop() {
         // }
 
         previoussecs = currentsecs;
-    }
+    } 
 
     getTimeStamp();
     onReceive(LoRa.parsePacket());
+
+    delay(30);
 }
 
 void startLoRA(){
