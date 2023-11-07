@@ -21,6 +21,8 @@
 // 915E6 for North America
 #define BAND 433E6
 
+#define FEEDING_TIME_MILLIS ( (FEEDING_TIME) * 1000 )
+
 const char* ssid     = MY_SSID;
 const char* password = MY_PASSWORD;
 
@@ -120,7 +122,7 @@ void setup() {
         Serial.println("Feeding ON");
         myservo.attach(servo);
         myservo.write(45);
-        delay(1000);
+        delay(FEEDING_TIME_MILLIS);
         myservo.detach();
         request->send_P(200, "text/plain", "Feeding ON Susses");
     });
