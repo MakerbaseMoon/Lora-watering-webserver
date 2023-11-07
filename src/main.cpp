@@ -180,11 +180,14 @@ void startLoRA(){
 
     LoRa.setPins(ss, rst, dio0);
     
+    Serial.print("Connecting to LoRa Node1");
     while(!LoRa.begin(BAND) && counter < 10) {
         Serial.print(".");
         counter++;
         delay(500);
     }
+    Serial.println("");
+
     if(counter == 10) {
         Serial.println("Starting LoRa failed!"); 
     }
@@ -202,7 +205,7 @@ void connectWiFi() {
 
     Serial.println("");
     Serial.println("WiFi connected.");
-    Serial.println("IP address: ");
+    Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 }
 
