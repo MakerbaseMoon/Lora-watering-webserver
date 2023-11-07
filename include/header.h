@@ -4,6 +4,7 @@
 #define MY_SSID "SSID"
 #define MY_PASSWORD "PASSWORD"
 
-#define NODE1_LORA_ADDRESS 0x01
+#define MASTER_NODE_ADDRESS 0xFF
+#define NODE1_LORA_ADDRESS  0x01
 
 #endif

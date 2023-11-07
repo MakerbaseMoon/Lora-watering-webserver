@@ -26,9 +26,9 @@ const char* password = MY_PASSWORD;
 
 Servo myservo;
 
-byte MasterNode = 0xFF;
+byte MasterNode = MASTER_NODE_ADDRESS;
 byte Node1      = NODE1_LORA_ADDRESS;
-byte Node2      = 0x02;
+// byte Node2      = 0x02;
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -297,10 +297,10 @@ void onReceive(int packetSize) {
             
     int recipient = LoRa.read();
     byte sender = LoRa.read();
-    if ( sender == 0X01 )
+    if ( sender == NODE1_LORA_ADDRESS )
         SenderNode = "Node1";
-    if ( sender == 0X02 )
-        SenderNode = "Node2";
+    // if ( sender == 0X02 )
+    //     SenderNode = "Node2";
     byte incomingMsgId = LoRa.read();
     byte incomingLength = LoRa.read();
 
