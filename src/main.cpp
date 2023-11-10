@@ -299,7 +299,7 @@ void onReceive(int packetSize) {
             
     int recipient = LoRa.read();
     byte sender = LoRa.read();
-    if ( sender == NODE1_LORA_ADDRESS )
+    if ( sender == Node1 )
         SenderNode = "Node1";
     // if ( sender == 0X02 )
     //     SenderNode = "Node2";
@@ -323,16 +323,16 @@ void onReceive(int packetSize) {
 
     Serial.println(SenderNode + "/" +incoming);
 
-    if( sender == 0X02 ) {
-        String t = getValue(incoming, ',', 0); 
-        String h = getValue(incoming, ',', 1); 
+    // if( sender == 0X02 ) {
+    //     String t = getValue(incoming, ',', 0); 
+    //     String h = getValue(incoming, ',', 1); 
 
-        temperature = t.toInt();
-        humidity = h.toInt();
-        incoming = "";
-    }
+    //     temperature = t.toInt();
+    //     humidity = h.toInt();
+    //     incoming = "";
+    // }
 
-    if( sender == 0X01 ) {
+    if( sender == Node1 ) {
         temperature = getValue(incoming, ',', 0);
         humidity = getValue(incoming, ',', 1);
         moisture = getValue(incoming, ',', 2); 
